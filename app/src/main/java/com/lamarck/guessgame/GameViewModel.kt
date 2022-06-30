@@ -1,18 +1,19 @@
 package com.lamarck.guessgame
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class GameViewModel: ViewModel() {
 
     val words = listOf("Android","Activity","Fragment")
     val secretWord = words.random().uppercase()
-    var secretWorsdDisplay = ""
+    val secretWorsdDisplay = MutableLiveData<String>()
     var correctGuesses =""
-    var incorrectGuesses =""
-    var livesLefty =8
+    val incorrectGuesses = MutableLiveData<String>()
+    val livesLefty = MutableLiveData<Int>(8)
 
     init {
-        secretWorsdDisplay = deriveSecretWordDisplay()
+        secretWorsdDisplay.value = deriveSecretWordDisplay()
     }
 
     fun deriveSecretWordDisplay(): String{
@@ -34,17 +35,17 @@ class GameViewModel: ViewModel() {
         if (guess.length ==1 ){
             if (secretWord.contains(guess)){
                 correctGuesses += guess
-                secretWorsdDisplay = deriveSecretWordDisplay()
+                secretWorsdDisplay.value = deriveSecretWordDisplay()
             }else{
-                incorrectGuesses +="$guess"
-                livesLefty--
+                incorrectGuesses.value +="$guess"
+                livesLefty.value = livesLefty.value?.minus(1)
             }
         }
     }
 
-    fun isWon() = secretWord.equals(secretWorsdDisplay,true)
+    fun isWon() = secretWord.equals(secretWorsdDisplay.value,true)
 
-    fun isLost() = livesLefty  <=0
+    fun isLost() = livesLefty.value?:0  <=0
 
     fun wonLostMessage():String{
         var message =""

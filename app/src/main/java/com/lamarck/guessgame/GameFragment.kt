@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.lamarck.guessgame.databinding.FragmentGameBinding
@@ -40,12 +41,24 @@ class GameFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
 
 
-        updateScreen()
+       // updateScreen()
+
+        viewModel.incorrectGuesses.observe(viewLifecycleOwner, Observer {
+            newValue-> binding.incorrectGuess.text ="Incorrect guess: $newValue"
+        })
+
+        viewModel.livesLefty.observe(viewLifecycleOwner, Observer {
+            newValue-> binding.lives.text ="You have $newValue lives left"
+        })
+
+        viewModel.secretWorsdDisplay.observe(viewLifecycleOwner, Observer {
+            newValue-> binding.word.text= newValue
+        })
 
         binding.guessButton.setOnClickListener() {
             viewModel.makeGuess(binding.guess.text.toString().uppercase())
             binding.guess.text = null
-            updateScreen()
+            //updateScreen()
 
             if(viewModel.isWon()|| viewModel.isLost()){
                 val action = GameFragmentDirections
@@ -63,12 +76,12 @@ class GameFragment : Fragment() {
         _binding = null
     }
 
-    fun updateScreen(){
+    /*fun updateScreen(){
         binding.word.text = viewModel.secretWorsdDisplay
         binding.lives.text ="You have ${viewModel.livesLefty} lives left"
         binding.incorrectGuess.text ="Incorrect guesses: ${viewModel.incorrectGuesses}"
 
-    }
+    }*/
 
 
 
